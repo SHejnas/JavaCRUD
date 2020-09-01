@@ -44,9 +44,9 @@ public class ToDoService {
         Optional<ToDo> toDoOptional = toDoRepository.findById(id);
         if(toDoOptional.isPresent()) {
             toDoRepository.deleteById(id);
-            return new ResponseWrapper(true, 200, "successfully deleted");
+            return new ResponseWrapper(true, 200, "successfully deleted", null);
         }else{
-            return new ResponseWrapper();
+            return new ResponseWrapper(false, 404, "Not Found", null);
         }
     }
 }
