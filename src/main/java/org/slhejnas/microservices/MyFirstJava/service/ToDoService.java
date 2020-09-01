@@ -1,13 +1,10 @@
 package org.slhejnas.microservices.MyFirstJava.service;
 
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.slhejnas.microservices.MyFirstJava.model.ResponseWrapper;
 import org.slhejnas.microservices.MyFirstJava.model.ToDo;
 import org.slhejnas.microservices.MyFirstJava.repository.ToDoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -43,13 +40,13 @@ public class ToDoService {
         }
         return toDoOptional;
     }
-    public String deleteToDo(Long id){
+    public ResponseWrapper deleteToDo(Long id){
         Optional<ToDo> toDoOptional = toDoRepository.findById(id);
         if(toDoOptional.isPresent()) {
             toDoRepository.deleteById(id);
-            return "deleted";
-        }else {
-            return "not found";
+            return new ResponseWrapper(true, 200, "successfully deleted");
+        }else{
+            return new ResponseWrapper();
         }
     }
 }

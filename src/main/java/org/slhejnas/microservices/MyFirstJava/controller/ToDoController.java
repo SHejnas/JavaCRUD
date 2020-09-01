@@ -1,5 +1,6 @@
 package org.slhejnas.microservices.MyFirstJava.controller;
 
+import org.slhejnas.microservices.MyFirstJava.model.ResponseWrapper;
 import org.slhejnas.microservices.MyFirstJava.model.ToDo;
 import org.slhejnas.microservices.MyFirstJava.service.ToDoService;
 import org.springframework.http.HttpStatus;
@@ -38,15 +39,20 @@ public class ToDoController {
     public Optional<ToDo> toggleToDo(@PathVariable Long id){
         return toDoService.toggleToDo(id);
     }
+//    @DeleteMapping("/{id}")
+//    public ResponseEntity<HttpStatus> deleteToDo(@PathVariable Long id){
+//        String status = toDoService.deleteToDo(id);
+//        if (status.equals("not found")) {
+//            return new ResponseEntity<HttpStatus>(HttpStatus.NOT_FOUND);
+//        }else if(status.equals("deleted")){
+//            return new ResponseEntity<HttpStatus>(HttpStatus.OK);
+//        }
+//        return new ResponseEntity<HttpStatus>(HttpStatus.INTERNAL_SERVER_ERROR);
+//    }
     @DeleteMapping("/{id}")
-    public ResponseEntity<HttpStatus> deleteToDo(@PathVariable Long id){
-        String status = toDoService.deleteToDo(id);
-        if (status.equals("not found")) {
-            return new ResponseEntity<HttpStatus>(HttpStatus.NOT_FOUND);
-        }else if(status.equals("deleted")){
-            return new ResponseEntity<HttpStatus>(HttpStatus.OK);
-        }
-        return new ResponseEntity<HttpStatus>(HttpStatus.INTERNAL_SERVER_ERROR);
+    public ResponseWrapper deleteToDo(@PathVariable Long id){
+        ResponseWrapper response = toDoService.deleteToDo(id);
+        return response;
     }
 }
 

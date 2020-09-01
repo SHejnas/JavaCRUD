@@ -15,6 +15,7 @@ public class ToDo {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     private String taskTitle;
+    private String taskDescription;
     private Boolean completed = false;
     private Instant createdOn = Instant.now();
 }
