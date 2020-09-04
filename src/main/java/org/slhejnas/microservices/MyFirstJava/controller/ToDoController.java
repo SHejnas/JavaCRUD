@@ -1,12 +1,14 @@
 package org.slhejnas.microservices.MyFirstJava.controller;
 
-import org.slhejnas.microservices.MyFirstJava.model.ResponseWrapper;
+import org.slhejnas.microservices.MyFirstJava.exception.ToDoNotFoundException;
+import org.slhejnas.microservices.MyFirstJava.model.ToDoResponse;
 import org.slhejnas.microservices.MyFirstJava.model.ToDo;
 import org.slhejnas.microservices.MyFirstJava.service.ToDoService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.swing.text.html.Option;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,41 +20,63 @@ public class ToDoController {
         this.toDoService = toDoService;
     }
     @PostMapping
-    public ToDo createToDo(@RequestBody ToDo toDo){
-        return toDoService.insertToDo(toDo);
-    }
-    @GetMapping("/all")
-    public List<ToDo> getAllToDo(){
-        return toDoService.getAllToDo();
-    }
-    @GetMapping("/{id}")
-    public ResponseEntity<ToDo> getOneToDo(@PathVariable Long id){
-        Optional <ToDo> toDo = toDoService.getOneToDo(id);
-        if(toDo.isPresent()) {
-            return new ResponseEntity<ToDo>(toDo.get(), HttpStatus.OK);
-        }else{
-            return new ResponseEntity<ToDo>(HttpStatus.NOT_FOUND);
-            //this is returning 500 not 404, must look into this
+    public ResponseEntity<ToDoResponse> createToDo(@RequestBody ToDo toDo){
+        try {
+            ToDo toDo1 = toDoService.insertToDo(toDo);
+            final ToDoResponse toDoResponse = new ToDoResponse(true, 200, "retrieved ToDo Successfully", toDo1, null, null);
+            return new ResponseEntity<ToDoResponse>(toDoResponse, HttpStatus.OK);
+        } catch (ToDoNotFoundException tdnfe){
+            final ToDoResponse toDoResponse = new ToDoResponse(false, 404, "No ToDos Found", null, null,tdnfe);
+            return new ResponseEntity<ToDoResponse>(toDoResponse, HttpStatus.NOT_FOUND);
         }
     }
-    @PutMapping("/{id}")
-    public Optional<ToDo> toggleToDo(@PathVariable Long id){
-        return toDoService.toggleToDo(id);
+    @GetMapping("/all")
+    public ResponseEntity<ToDoResponse> getAllToDo(){
+        try {
+            List<ToDo> toDoList = toDoService.getAllToDo();
+            final ToDoResponse toDoResponse = new ToDoResponse(true, 200, "retrieved ToDo Successfully", null, toDoList,null);
+            return new ResponseEntity<ToDoResponse>(toDoResponse, HttpStatus.OK);
+        }catch(ToDoNotFoundException tdnfe) {
+
+            final ToDoResponse toDoResponse = new ToDoResponse(false, 404, "No ToDos Found", null, null, tdnfe);
+            return new ResponseEntity<ToDoResponse>(toDoResponse, HttpStatus.NOT_FOUND);
+        }
     }
-//    @DeleteMapping("/{id}")
-//    public ResponseEntity<HttpStatus> deleteToDo(@PathVariable Long id){
-//        String status = toDoService.deleteToDo(id);
-//        if (status.equals("not found")) {
-//            return new ResponseEntity<HttpStatus>(HttpStatus.NOT_FOUND);
-//        }else if(status.equals("deleted")){
-//            return new ResponseEntity<HttpStatus>(HttpStatus.OK);
-//        }
-//        return new ResponseEntity<HttpStatus>(HttpStatus.INTERNAL_SERVER_ERROR);
-//    }
+    @GetMapping("/{id}")
+    public ResponseEntity<ToDoResponse> getOneToDo(@PathVariable Long id){
+        try {
+            ToDo toDo = toDoService.getOneToDo(id);
+            final ToDoResponse toDoResponse = new ToDoResponse(true, 200, "retrieved ToDo Successfully", toDo, null, null);
+            return new ResponseEntity<ToDoResponse>(toDoResponse, HttpStatus.OK);
+        }catch(ToDoNotFoundException tdnfe){
+            final ToDoResponse toDoResponse = new ToDoResponse(false, 404, "No ToDos Found", null, null, tdnfe);
+            return new ResponseEntity<ToDoResponse>(toDoResponse, HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<ToDoResponse> toggleToDo(@PathVariable Long id) {
+        try {
+            ToDo toDo = toDoService.toggleToDo(id);
+            final ToDoResponse toDoResponse = new ToDoResponse(true, 200, "Updated Successfully", toDo, null, null);
+            return new ResponseEntity<ToDoResponse>(toDoResponse, HttpStatus.OK);
+        }catch (ToDoNotFoundException tdnfe){
+            final ToDoResponse toDoResponse = new ToDoResponse(false, 404, "No ToDos Found", null, null, tdnfe);
+            return new ResponseEntity<ToDoResponse>(toDoResponse, HttpStatus.NOT_FOUND);
+        }
+    }
+
     @DeleteMapping("/{id}")
-    public ResponseWrapper deleteToDo(@PathVariable Long id){
-        ResponseWrapper response = toDoService.deleteToDo(id);
-        return response;
+    public ResponseEntity<ToDoResponse> deleteToDo(@PathVariable Long id){
+        try {
+            toDoService.deleteToDo(id);
+            final ToDoResponse toDoResponse = new ToDoResponse(true, 200, "Deleted Successfully",null, null, null);
+            return new ResponseEntity<ToDoResponse>(toDoResponse, HttpStatus.OK);
+        }catch (ToDoNotFoundException tdnfe){
+            final ToDoResponse toDoResponse = new ToDoResponse(false, 404, "No ToDos Found",null, null, tdnfe);
+            return  new ResponseEntity<ToDoResponse>(toDoResponse, HttpStatus.NOT_FOUND);
+        }
+
     }
 }
 
