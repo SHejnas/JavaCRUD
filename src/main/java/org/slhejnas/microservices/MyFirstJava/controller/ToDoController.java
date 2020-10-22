@@ -9,10 +9,11 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
-
+@CrossOrigin
 @RestController
 @RequestMapping("/todo")
 public class ToDoController {
+
     private final ToDoService toDoService;
     public ToDoController(ToDoService toDoService){
         this.toDoService = toDoService;
